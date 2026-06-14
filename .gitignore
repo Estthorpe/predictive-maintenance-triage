@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Secrets - NEVER commit
+.env
+
+# Data & model artifacts (handled by DVC, not git)
+data/*
+!data/.gitkeep
+mlruns/
+*.onnx
+*.pkl
+*.joblib
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
