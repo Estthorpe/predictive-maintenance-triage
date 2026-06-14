@@ -11,9 +11,8 @@ venv/
 # Secrets - NEVER commit
 .env
 
-# Data & model artifacts (handled by DVC, not git)
-data/*
-!data/.gitkeep
+# Data: ignore the big raw files, but ALLOW DVC pointer files (.dvc)
+data/*.csv
 mlruns/
 *.onnx
 *.pkl

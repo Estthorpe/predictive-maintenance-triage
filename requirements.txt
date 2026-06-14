@@ -8,11 +8,11 @@
 pydantic>=2.0
 
 # --- Phase 1 (later): data versioning ---
-# dvc
+dvc
 
 # --- Phase 2 / 3: Evaluation & Models ---
-# numpy
-# pandas
+numpy
+pandas
 # scipy
 # scikit-learn
 # lightgbm
