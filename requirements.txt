@@ -39,3 +39,4 @@ pandas
 # langgraph
 # langchain-core
 # httpx
+pyyaml

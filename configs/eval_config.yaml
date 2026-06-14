@@ -1,0 +1,5 @@
+# Evaluation gate thresholds for P7.
+# A candidate model must satisfy ALL of these to pass CI.
+recall_at_k_target: 0.80     # must catch >= 80% of true failures in top-K
+k_fraction: 0.10             # K = top 10% of the fleet
+fp_budget: 0.10              # may flag at most 10% of assets
