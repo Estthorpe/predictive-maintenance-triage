@@ -7,3 +7,4 @@ select = ["E", "F", "I"]   # errors, pyflakes, import sorting
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]   # <-- include the project root so "import src..." works
