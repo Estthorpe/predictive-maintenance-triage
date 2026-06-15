@@ -13,7 +13,7 @@ dvc
 # --- Phase 2 / 3: Evaluation & Models ---
 numpy
 pandas
-# scipy
+scipy
 # scikit-learn
 # lightgbm
 # shap
