@@ -28,7 +28,7 @@ httpx
 
 # --- Phase 5: Monitoring ---
 # evidently
-# prometheus-client
+prometheus-client
 
 # --- Phase 6: GenAI Integration ---
 # anthropic
@@ -38,3 +38,4 @@ httpx
 # --- Phase 7: Agentic Layer ---
 # langgraph
 # langchain-core
+prometheus-client

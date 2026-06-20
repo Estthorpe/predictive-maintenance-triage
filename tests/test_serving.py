@@ -51,3 +51,15 @@ def test_predict_rejects_missing_device_id(client):
     # Missing required field -> 422 validation error.
     r = client.post("/predict_failure", json={"values": [10.0, 11.0]})
     assert r.status_code == 422
+
+
+def test_metrics_endpoint_exposes_prometheus_data(client):
+    # Hit predict once so a metric increments, then scrape /metrics.
+    client.post(
+        "/predict_failure",
+        json={"device_id": "B1", "values": [10.0, 11.0, 12.0, 13.0]},
+    )
+    r = client.get("/metrics")
+    assert r.status_code == 200
+    # The Prometheus text exposition should contain our metric name.
+    assert "p7_predictions_total" in r.text
