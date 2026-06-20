@@ -14,8 +14,8 @@ dvc
 numpy
 pandas
 scipy
-# scikit-learn
-# lightgbm
+scikit-learn
+lightgbm
 # shap
 # mlflow
 
@@ -40,3 +40,4 @@ scipy
 # langchain-core
 # httpx
 pyyaml
+matplotlib

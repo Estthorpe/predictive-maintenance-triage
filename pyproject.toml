@@ -1,3 +1,17 @@
+[project]
+name = "predictive-maintenance-triage"
+version = "0.1.0"
+description = "Production-grade predictive maintenance system for manufacturing / IoT."
+requires-python = ">=3.12"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+# Tell the packager that "src" (and its sub-packages) is our code.
+packages = ["src"]
+
 [tool.ruff]
 line-length = 100
 target-version = "py312"
@@ -7,4 +21,9 @@ select = ["E", "F", "I"]   # errors, pyflakes, import sorting
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["."]   # <-- include the project root so "import src..." works
+pythonpath = ["."]
+
+[tool.ruff.lint.per-file-ignores]
+# Diagnostic/investigation scripts favour readable inline prints over strict
+# line length; they are run by hand, not part of the production package.
+"scripts/*" = ["E501"]

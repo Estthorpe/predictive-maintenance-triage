@@ -21,3 +21,9 @@ mlruns/
 # OS / editor noise
 .DS_Store
 Thumbs.db
+
+# Large raw datasets (handled outside git - DVC/local only)
+data/*.zip
+data/sensor_data_real.csv
+data/anomaly_labels_real.csv
+data/*.png

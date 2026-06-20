@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 
 from src.features.engineering import (
+    compute_baseline_zscore,
     compute_features,
     compute_fft_features,
     compute_time_domain_features,
@@ -107,3 +108,31 @@ def test_louder_signal_has_more_fft_energy():
     f_loud = compute_fft_features(loud, window=10)
     # Energy is proportional to amplitude squared -> loud signal has more energy.
     assert f_loud["fft_energy"].mean() > f_quiet["fft_energy"].mean()
+
+
+def test_zscore_is_zero_at_baseline_mean():
+    # A reading exactly at the baseline mean has z-score 0.
+    values = pd.Series([10.0])
+    z = compute_baseline_zscore(values, baseline_mean=10.0, baseline_std=2.0)
+    assert z.iloc[0] == 0.0
+
+
+def test_zscore_counts_standard_deviations():
+    # 14 is (14-10)/2 = 2 standard deviations above the mean.
+    values = pd.Series([14.0])
+    z = compute_baseline_zscore(values, baseline_mean=10.0, baseline_std=2.0)
+    assert z.iloc[0] == 2.0
+
+
+def test_zscore_handles_zero_std_safely():
+    # A flat baseline (std 0) must not divide by zero -> returns 0.
+    values = pd.Series([10.0, 12.0])
+    z = compute_baseline_zscore(values, baseline_mean=10.0, baseline_std=0.0)
+    assert (z == 0.0).all()
+
+
+def test_zscore_negative_below_baseline():
+    # Below-baseline reading gives a negative z-score.
+    values = pd.Series([6.0])
+    z = compute_baseline_zscore(values, baseline_mean=10.0, baseline_std=2.0)
+    assert z.iloc[0] == -2.0

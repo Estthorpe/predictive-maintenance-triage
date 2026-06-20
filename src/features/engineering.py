@@ -130,3 +130,27 @@ def compute_features(
     time_feats = compute_time_domain_features(values, window=window)
     fft_feats = compute_fft_features(values, window=window)
     return pd.concat([time_feats, fft_feats], axis=1)
+
+
+def compute_baseline_zscore(
+    values: pd.Series,
+    baseline_mean: float,
+    baseline_std: float,
+) -> pd.Series:
+    """Per-asset baseline-deviation feature (z-score).
+
+    Measures how many standard deviations each reading sits above the asset's
+    OWN healthy baseline: z = (value - baseline_mean) / baseline_std.
+
+    This is a NOISE-AWARE, PER-ASSET deviation signal: it captures relative
+    degradation (a bearing drifting from its own normal) rather than absolute
+    magnitude, so it can flag subtle faults a global threshold misses.
+
+    Serving-safe: the baseline (mean, std) is PASSED IN - computed once from the
+    healthy training period - so training and serving use the identical baseline
+    and cannot drift. A near-zero std is guarded to avoid divide-by-zero.
+    """
+    values = pd.Series(values).reset_index(drop=True)
+    if baseline_std <= 0:
+        return pd.Series(np.zeros(len(values)))
+    return (values - baseline_mean) / baseline_std
