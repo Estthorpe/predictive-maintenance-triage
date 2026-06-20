@@ -21,6 +21,11 @@ jobs:
       - name: Install dependencies
         run: python -m pip install -r requirements-dev.txt
 
+      # Install the project itself (editable) so scripts can `import src...`
+      # on the clean runner - the CI equivalent of `pip install -e .` locally.
+      - name: Install project (editable)
+        run: python -m pip install -e .
+
       # Regenerate the synthetic dataset (deterministic/seeded).
       - name: Generate dataset
         run: python scripts/generate_sensor_data.py
