@@ -21,16 +21,16 @@ jobs:
       - name: Install dependencies
         run: python -m pip install -r requirements-dev.txt
 
-      # Regenerate the synthetic dataset so the clean runner has data to test
-      # against. Deterministic (seeded) -> identical bytes every run.
+      # Regenerate the synthetic dataset (deterministic/seeded).
       - name: Generate dataset
         run: python scripts/generate_sensor_data.py
+
+      # Train + save the model artifact so the serving tests can load it.
+      - name: Train model artifact
+        run: python scripts/train_and_save_model.py
 
       - name: Lint (Ruff)
         run: ruff check .
 
-      # This runs the full suite INCLUDING the evaluation gate on real data.
-      # A model that fails recall@K / FP budget / baseline will fail here and
-      # block the merge.
       - name: Run tests + evaluation gate (Pytest)
         run: pytest -v

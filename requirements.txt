@@ -1,13 +1,9 @@
 # === P7 runtime dependencies ===
-# ACTIVE  = installed and used right now.
-# ROADMAP = planned per phase, listed so there are no surprises, but commented
-#           out so we do not install heavy/unused packages early. Uncomment each
-#           line the moment its phase needs it.
+# ACTIVE  = installed and used now.
+# ROADMAP = planned for a later phase; commented out until that phase needs it.
 
 # --- Phase 1: Ingestion & Data Contracts ---
 pydantic>=2.0
-
-# --- Phase 1 (later): data versioning ---
 dvc
 
 # --- Phase 2 / 3: Evaluation & Models ---
@@ -16,12 +12,16 @@ pandas
 scipy
 scikit-learn
 lightgbm
+joblib
+matplotlib
+pyyaml
 # shap
 # mlflow
 
 # --- Phase 4: Serving ---
-# fastapi
-# uvicorn[standard]
+fastapi
+uvicorn
+httpx
 # onnx
 # skl2onnx
 # onnxruntime
@@ -38,6 +38,3 @@ lightgbm
 # --- Phase 7: Agentic Layer ---
 # langgraph
 # langchain-core
-# httpx
-pyyaml
-matplotlib
