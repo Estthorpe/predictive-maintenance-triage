@@ -1,0 +1,17 @@
+.venv/
+.git/
+.github/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+data/
+models/
+*.joblib
+*.csv
+*.zip
+*.png
+tests/
+docs/
+.env
