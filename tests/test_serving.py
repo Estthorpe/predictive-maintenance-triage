@@ -63,3 +63,14 @@ def test_metrics_endpoint_exposes_prometheus_data(client):
     assert r.status_code == 200
     # The Prometheus text exposition should contain our metric name.
     assert "p7_predictions_total" in r.text
+
+
+def test_explain_returns_grounded_summary(client):
+    payload = {"device_id": "BEARING_07", "values": [10.1, 10.3, 9.8, 11.2, 14.5, 18.9]}
+    r = client.post("/explain", json=payload)
+    assert r.status_code == 200
+    body = r.json()
+    assert body["device_id"] == "BEARING_07"
+    assert isinstance(body["summary"], str) and len(body["summary"]) > 0
+    assert body["source"] in ("llm", "fallback")
+    assert body["prompt_version"] == "v1"

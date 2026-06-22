@@ -18,13 +18,18 @@ from pathlib import Path
 
 import joblib
 import pandas as pd
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Response
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
 from pydantic import BaseModel, Field
 
 from src.features.engineering import compute_baseline_zscore, compute_features
+from src.genai.report import generate_report
 
 MODEL_PATH = Path("models") / "anomaly_model.joblib"
+
+# Load .env so ANTHROPIC_API_KEY is available to the LLM report generator.
+load_dotenv()
 
 # --- Prometheus metrics (the operational vitals) ---
 PREDICTIONS_TOTAL = Counter("p7_predictions_total", "Total prediction requests served.")
@@ -125,4 +130,42 @@ def predict_failure(req: PredictRequest) -> PredictResponse:
         PREDICTION_ERRORS.inc()  # count failures
         raise
     finally:
-        PREDICTION_LATENCY.observe(time.perf_counter() - start)  # record latency
+        PREDICTION_LATENCY.observe(time.perf_counter() - start)
+
+
+class ExplainResponse(BaseModel):
+    device_id: str
+    risk_score: float
+    summary: str
+    source: str  # "llm" or "fallback"
+    prompt_version: str
+
+
+@app.post("/explain", response_model=ExplainResponse)
+def explain(req: PredictRequest) -> ExplainResponse:
+    """Grounded narrative report: the MODEL scores, the LLM explains.
+
+    Reuses the exact prediction logic, then passes the model''s REAL output to
+    the report generator. The LLM never decides the risk - it only translates.
+    """
+    if _bundle is None:
+        raise HTTPException(status_code=503, detail="Model not loaded")
+
+    # 1. The model decides (authority) - reuse the prediction path.
+    prediction = predict_failure(req)
+
+    # 2. The LLM explains (presentation) - grounded in the model''s real output.
+    report = generate_report(
+        device_id=prediction.device_id,
+        risk_score=prediction.risk_score,
+        top_sensors=prediction.top_sensors,
+        recommended_action=prediction.recommended_action,
+    )
+
+    return ExplainResponse(
+        device_id=prediction.device_id,
+        risk_score=prediction.risk_score,
+        summary=report["summary"],
+        source=report["source"],
+        prompt_version=report["prompt_version"],
+    )

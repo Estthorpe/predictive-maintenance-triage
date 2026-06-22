@@ -31,11 +31,13 @@ httpx
 prometheus-client
 
 # --- Phase 6: GenAI Integration ---
-# anthropic
+anthropic
 # langfuse
-# python-dotenv
+python-dotenv
 
 # --- Phase 7: Agentic Layer ---
 # langgraph
 # langchain-core
 prometheus-client
+anthropic
+python-dotenv
