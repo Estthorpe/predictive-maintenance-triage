@@ -74,3 +74,13 @@ def test_explain_returns_grounded_summary(client):
     assert isinstance(body["summary"], str) and len(body["summary"]) > 0
     assert body["source"] in ("llm", "fallback")
     assert body["prompt_version"] == "v1"
+
+
+def test_triage_endpoint(client):
+    payload = {"device_id": "BEARING_07", "values": [10.1, 10.3, 9.8, 11.2, 14.5, 18.9]}
+    r = client.post("/triage", json=payload)
+    assert r.status_code == 200
+    body = r.json()
+    assert body["device_id"] == "BEARING_07"
+    assert body["status"] in ("done", "needs_human", "halted_step_limit")
+    assert len(body["audit_log"]) > 0

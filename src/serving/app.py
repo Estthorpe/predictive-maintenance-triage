@@ -23,6 +23,7 @@ from fastapi import FastAPI, HTTPException, Response
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
 from pydantic import BaseModel, Field
 
+from src.agents.maintenance_agent import persist_run, run_agent
 from src.features.engineering import compute_baseline_zscore, compute_features
 from src.genai.report import generate_report
 
@@ -168,4 +169,41 @@ def explain(req: PredictRequest) -> ExplainResponse:
         summary=report["summary"],
         source=report["source"],
         prompt_version=report["prompt_version"],
+    )
+
+
+class TriageResponse(BaseModel):
+    device_id: str
+    risk_score: float | None
+    status: str
+    flags: list[str]
+    recommended_action: str | None
+    explanation: str | None
+    steps_taken: int
+    audit_log: list[str]
+
+
+@app.post("/triage", response_model=TriageResponse)
+def triage(req: PredictRequest) -> TriageResponse:
+    """Run the governed maintenance agent on a window of readings.
+
+    The agent orchestrates score -> explain -> schedule, escalates high-risk
+    cases for human review, and the full run is persisted to the append-only
+    audit log.
+    """
+    if _bundle is None:
+        raise HTTPException(status_code=503, detail="Model not loaded")
+
+    state = run_agent(req.device_id, req.values, _bundle)
+    persist_run(state)  # append-only accountability
+
+    return TriageResponse(
+        device_id=state.device_id,
+        risk_score=state.risk_score,
+        status=state.status,
+        flags=state.flags,
+        recommended_action=state.recommended_action,
+        explanation=state.explanation,
+        steps_taken=state.steps_taken,
+        audit_log=state.audit_log,
     )
