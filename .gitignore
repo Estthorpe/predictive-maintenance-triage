@@ -27,3 +27,13 @@ data/*.zip
 data/sensor_data_real.csv
 data/anomaly_labels_real.csv
 data/*.png
+
+# BI-0 generated artifacts (regenerable from seed)
+data/agent_history.jsonl
+data/device_metadata.json
+data/bi/
+
+# BI-0 generated artifacts (regenerable from seed)
+data/agent_history.jsonl
+data/device_metadata.json
+data/bi/
