@@ -36,8 +36,10 @@ anthropic
 python-dotenv
 
 # --- Phase 7: Agentic Layer ---
-# langgraph
-# langchain-core
+langgraph
+langchain-core
 prometheus-client
 anthropic
 python-dotenv
+langgraph
+langchain-core
